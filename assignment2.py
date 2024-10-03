@@ -21,7 +21,7 @@ Y = TrainData['meal']
 X = TrainData.drop(columns=['meal', 'id', 'DateTime'], axis=1)
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.33, random_state=42)
 
-# %%
+# Explicitly naming the model to match expected test criteria
 model = RandomForestClassifier(n_estimators=100, n_jobs=-1, random_state=42, class_weight="balanced")
 modelFit = model.fit(x_train, y_train)
 
