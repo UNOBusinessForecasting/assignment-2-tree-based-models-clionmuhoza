@@ -7,37 +7,28 @@ Original file is located at
     https://colab.research.google.com/drive/1dB7dx10vwkcRRGCVJYLG2JyiqrJ_WS-O
 """
 
-# %%
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 
-# %%
-TrainData = pd.read_csv('https://github.com/dustywhite7/Econ8310/raw/master/AssignmentData/assignment3.csv')
+data = pd.read_csv( "https://github.com/dustywhite7/Econ8310/raw/master/AssignmentData/assignment3.csv" )
+data.head()
 
-# %%
-Y = TrainData['meal']
-X = TrainData.drop(columns=['meal', 'id', 'DateTime'], axis=1)
-x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.33, random_state=42)
+model = DecisionTreeClassifier( max_depth = 10, min_samples_leaf = 10 )
 
-# Explicitly naming the model to match expected test criteria
-model = RandomForestClassifier(n_estimators=100, n_jobs=-1, random_state=42, class_weight="balanced")
-modelFit = model.fit(x_train, y_train)
+Y, X = data["meal"], data.drop( ["meal", "id", "DateTime"], axis=1 )
 
-# %%
-y_pred = model.predict(x_test)
-acc = accuracy_score(y_test, y_pred)
-print(f"Model accuracy is {acc * 100:.2f}%.")
+x, xt, y, yt = train_test_split( X, Y, test_size=0.33, random_state=42 )
 
-# %%
-TestData = pd.read_csv('https://github.com/dustywhite7/Econ8310/raw/master/AssignmentData/assignment3test.csv')
+modelFit = model.fit( x,y )
 
-# %%
-xt = TestData.drop(columns=['meal', 'id', 'DateTime'], axis=1)
+print( "\n\nIn-sample accuracy: %s%%\n\n" % str(round(100*accuracy_score(y, model.predict(x)), 2)) )
+print( "\n\nOut-of-sample accuracy: %s%%\n\n" %str(round(100*accuracy_score(yt, model.predict(xt)), 2)) )
 
-# %%
-pred = model.predict(xt)
-pred = [int(p) for p in pred]
+test = pd.read_csv( "https://github.com/dustywhite7/Econ8310/raw/master/AssignmentData/assignment3test.csv" )
+testNew = test.drop( ["meal", "id", "DateTime"], axis=1 )
+testNew.head()
 
-print(pred)
+pred = modelFit.predict( testNew )
